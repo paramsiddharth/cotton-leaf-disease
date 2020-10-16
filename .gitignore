@@ -1,0 +1,8 @@
+# Python cache
+/__pycache__/
+
+# Uploaded files
+/uploads/*
+
+# The model
+/model_resnet.hdf5
