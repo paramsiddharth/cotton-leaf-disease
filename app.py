@@ -7,6 +7,9 @@ import re
 import numpy as np
 import tensorflow as tf
 
+import pathlib
+import wget
+
 # from tensorflow.compat.v1.compat import ConfigProto
 # from tensorflow.compat.v1 import InteractiveSession
 from tensorflow.python.client.session import InteractiveSession
@@ -28,7 +31,13 @@ from werkzeug.utils import secure_filename
 
 # Model saved with Keras model.save()
 MODEL_PATH = 'model_resnet.hdf5'
+MODEL_URL = 'https://github.com/paramsiddharth/cotton-leaf-disease/releases/download/v1.0/model_resnet.hdf5'
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'uploads')
+
+# Download model if not present
+while not pathlib.Path(MODEL_PATH).is_file():
+    print(f'Model {MODEL_PATH} not found. Downloading...')
+    wget.download(MODEL_URL)
 
 # Define a flask app
 app = Flask(__name__)
