@@ -1,5 +1,5 @@
 # Cotton Leaf Disease Prediction
-An implementation of a cotton leaf disease prediction machine learning model in TensorFlow. The model was trained by Ritesh (@DARK-art108). The application operates in a web interface where
+An implementation of a cotton leaf disease prediction machine learning model in TensorFlow. The model was trained by Ritesh ([@DARK-art108](https://github.com/DARK-art108)). The application operates in a web interface where
 
 ## Execution
  - Install all the PyPI requirements.
