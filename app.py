@@ -26,15 +26,35 @@ from werkzeug.utils import secure_filename
 
 # from gevent.pywsgi import WSGIServer
 
+# Model saved with Keras model.save()
+MODEL_PATH = 'model_resnet.hdf5'
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'uploads')
+
 # Define a flask app
 app = Flask(__name__)
 
-# Model saved with Keras model.save()
-MODEL_PATH = 'model_resnet.hdf5'
+# Define upload path
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Developing in the absence of TensorFlow :P (Python 3.9.0 x64)
+# def load_model(aa):
+#     class a:
+#         @staticmethod
+#         def predict(*args):
+#             return 1
+#     return a()
+
+# class image:
+#     @staticmethod
+#     def load_img(path, target_size):
+#         return 'a'
+    
+#     @staticmethod
+#     def img_to_array(img):
+#         return 'v'
 
 # Load your trained model
 model = load_model(MODEL_PATH)
-
 
 def model_predict(img_path, model):
     print(img_path)
@@ -52,43 +72,40 @@ def model_predict(img_path, model):
     # x = preprocess_input(x)
 
     preds = model.predict(x)
-    preds = np.argmax(preds, axis=1)
+    #preds = np.argmax(preds, axis=1)
     if preds == 0:
-        preds = "The leaf is diseased cotton leaf"
+        preds = "The leaf is a diseased cotton leaf."
     elif preds == 1:
-        preds = "The leaf is diseased cotton plant"
+        preds = "The leaf is a diseased cotton plant."
     elif preds == 2:
-        preds = "The leaf is fresh cotton leaf"
+        preds = "The leaf is a fresh cotton leaf."
     else:
-        preds = "The leaf is fresh cotton plant"
+        preds = "The leaf is a fresh cotton plant."
 
     return preds
 
 
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['GET', 'POST'])
 def index():
     # Main page
-    return render_template('index.html')
-
-
-@app.route('/predict', methods=['GET', 'POST'])
-def upload():
     if request.method == 'POST':
         # Get the file from post request
-        f = request.files['file']
+        print(request.files, request.form, request.args)
+        f = None
+        if 'image' in request.files: f = request.files['image']
         if f:
             # Save the file to ./uploads
-            basepath = os.path.dirname(__file__)
             file_path = os.path.join(
-                basepath, 'uploads', secure_filename(f.filename))
+                app.config['UPLOAD_FOLDER'], secure_filename(f.filename))
             f.save(file_path)
 
             # Make prediction
             preds = model_predict(file_path, model)
             result = preds
-            return result
-    return None
-
+            return render_template('index.html', result=result, img=secure_filename(f.filename))
+        return render_template('index.html', result=None, err='Failed to receive file')
+    # First time
+    return render_template('index.html', result=None)
 
 if __name__ == '__main__':
     app.run(port=5001, debug=True)
