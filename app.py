@@ -81,7 +81,7 @@ def model_predict(img_path, model):
     # x = preprocess_input(x)
 
     preds = model.predict(x)
-    #preds = np.argmax(preds, axis=1)
+    preds = np.argmax(preds, axis=1)
     if preds == 0:
         preds = "The leaf is a diseased cotton leaf."
     elif preds == 1:
